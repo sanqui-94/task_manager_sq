@@ -1,0 +1,54 @@
+<% content_for :title, "Board" %>
+
+<div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Kanban Board</h1>
+    <p class="mt-1 text-sm text-gray-600">Manage your tasks across To-do, In progress, and Done.</p>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="text-sm font-medium text-gray-600">Priority:</span>
+    <% Task.priorities.keys.each do |priority| %>
+      <% active = priority_filter_active?(priority, @priorities) %>
+      <%= link_to priority.titleize,
+            toggle_priority_filter(priority, @priorities),
+            class: "rounded-full px-3 py-1 text-sm font-medium #{active ? 'bg-blue-600 text-white ring-2 ring-blue-300' : 'bg-white text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50'}" %>
+    <% end %>
+  </div>
+</div>
+
+<section class="mb-10 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+  <h2 class="mb-4 text-lg font-semibold text-gray-900">New Task</h2>
+  <%= form_with model: @task, url: tasks_path, class: "grid gap-4 md:grid-cols-2" do |form| %>
+    <% if @task.errors.any? %>
+      <div class="md:col-span-2 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+        <%= @task.errors.full_messages.to_sentence %>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :title, class: "mb-1 block text-sm font-medium text-gray-700" %>
+      <%= form.text_field :title, required: true, placeholder: "Task title", class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" %>
+    </div>
+
+    <div>
+      <%= form.label :priority, class: "mb-1 block text-sm font-medium text-gray-700" %>
+      <%= form.select :priority, Task.priorities.keys.map { |p| [ p.titleize, p ] }, {}, class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" %>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= form.label :description, class: "mb-1 block text-sm font-medium text-gray-700" %>
+      <%= form.text_area :description, rows: 3, placeholder: "Optional description", class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" %>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= form.submit "Add to To-do", class: "cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500" %>
+    </div>
+  <% end %>
+</section>
+
+<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+  <%= render "board/column", title: "To-do", tasks: @todo_tasks %>
+  <%= render "board/column", title: "In progress", tasks: @in_progress_tasks %>
+  <%= render "board/column", title: "Done", tasks: @done_tasks %>
+</div>

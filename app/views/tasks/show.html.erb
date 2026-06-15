@@ -1,0 +1,81 @@
+<% content_for :title, @task.code %>
+
+<div class="mb-6">
+  <%= link_to "&larr; Back to board".html_safe, root_path, class: "text-sm font-medium text-blue-600 hover:text-blue-500" %>
+</div>
+
+<div class="grid gap-8 lg:grid-cols-3">
+  <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm lg:col-span-2">
+    <div class="mb-6 flex flex-wrap items-center gap-3">
+      <span class="font-mono text-sm text-gray-500"><%= @task.code %></span>
+      <%= render "shared/priority_badge", priority: @task.priority %>
+    </div>
+
+    <%= form_with model: @task, url: task_path(@task), method: :patch, class: "space-y-5" do |form| %>
+      <% if @task.errors.any? %>
+        <div class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+          <%= @task.errors.full_messages.to_sentence %>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.label :title, class: "mb-1 block text-sm font-medium text-gray-700" %>
+        <%= form.text_field :title, class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" %>
+      </div>
+
+      <div>
+        <%= form.label :description, class: "mb-1 block text-sm font-medium text-gray-700" %>
+        <%= form.text_area :description, rows: 5, class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" %>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <%= form.label :status, class: "mb-1 block text-sm font-medium text-gray-700" %>
+          <%= form.select :status, Task.statuses.keys.map { |s| [ s.humanize, s ] }, {}, class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" %>
+        </div>
+
+        <div>
+          <%= form.label :priority, class: "mb-1 block text-sm font-medium text-gray-700" %>
+          <%= form.select :priority, Task.priorities.keys.map { |p| [ p.titleize, p ] }, {}, class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" %>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-3">
+        <%= form.submit "Save changes", class: "cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500" %>
+        <% unless @task.archived? %>
+          <%= button_to "Archive", archive_task_path(@task), method: :patch, class: "rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200" %>
+        <% else %>
+          <%= button_to "Unarchive", unarchive_task_path(@task), method: :patch, class: "rounded-md bg-green-100 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-200" %>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    <h2 class="mb-4 text-lg font-semibold text-gray-900">Comments</h2>
+
+    <div class="mb-6 space-y-4">
+      <% if @task.comments.any? %>
+        <% @task.comments.order(created_at: :desc).each do |comment| %>
+          <article class="rounded-lg border border-gray-100 bg-gray-50 p-4">
+            <div class="mb-2 flex items-center justify-between gap-2 text-xs text-gray-500">
+              <span class="font-medium text-gray-700"><%= comment.user.email_address %></span>
+              <time datetime="<%= comment.created_at.iso8601 %>"><%= l(comment.created_at, format: :long) %></time>
+            </div>
+            <p class="whitespace-pre-wrap text-sm text-gray-800"><%= comment.body %></p>
+          </article>
+        <% end %>
+      <% else %>
+        <p class="text-sm text-gray-500">No comments yet.</p>
+      <% end %>
+    </div>
+
+    <%= form_with model: @comment, url: task_comments_path(@task), class: "space-y-3" do |form| %>
+      <div>
+        <%= form.label :body, "Add a comment", class: "mb-1 block text-sm font-medium text-gray-700" %>
+        <%= form.text_area :body, rows: 4, required: true, class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" %>
+      </div>
+      <%= form.submit "Post comment", class: "cursor-pointer rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800" %>
+    <% end %>
+  </section>
+</div>

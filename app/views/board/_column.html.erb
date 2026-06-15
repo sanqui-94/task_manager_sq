@@ -1,0 +1,16 @@
+<section class="flex min-h-[24rem] flex-col rounded-xl border border-gray-200 bg-gray-100/70 p-4">
+  <header class="mb-4 flex items-center justify-between">
+    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-600"><%= title %></h2>
+    <span class="rounded-full bg-white px-2 py-0.5 text-xs font-medium text-gray-600"><%= tasks.size %></span>
+  </header>
+
+  <div class="flex flex-1 flex-col gap-3">
+    <% if tasks.any? %>
+      <% tasks.each do |task| %>
+        <%= render "tasks/task_card", task: task %>
+      <% end %>
+    <% else %>
+      <p class="flex flex-1 items-center justify-center text-sm text-gray-500">No tasks here yet.</p>
+    <% end %>
+  </div>
+</section>

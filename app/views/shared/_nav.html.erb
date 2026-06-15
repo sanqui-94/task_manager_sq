@@ -1,0 +1,14 @@
+<nav class="border-b border-gray-200 bg-white">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-6">
+      <%= link_to "Task Manager", root_path, class: "text-lg font-semibold text-gray-900" %>
+      <%= link_to "Board", root_path, class: "text-sm font-medium #{current_page?(root_path) ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}" %>
+      <%= link_to "Archive", archive_path, class: "text-sm font-medium #{current_page?(archive_path) ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}" %>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <span class="hidden text-sm text-gray-500 sm:inline"><%= current_user.email_address %></span>
+      <%= button_to "Sign out", session_path, method: :delete, class: "rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200" %>
+    </div>
+  </div>
+</nav>
