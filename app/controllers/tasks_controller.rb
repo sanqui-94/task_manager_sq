@@ -1,5 +1,5 @@
 class TasksController < ApplicationController
-  before_action :set_task, only: %i[ show edit update archive unarchive ]
+  before_action :set_task, only: %i[ show update archive unarchive ]
 
   def show
     @comment = @task.comments.build
